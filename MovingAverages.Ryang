@@ -1,0 +1,384 @@
+
+
+
+
+
+
+
+
+
+MovingAverage <- function (c_dataset, c_library, c_name, n_quality = 2, n_period = 120)
+	{
+	#indata <- Ebble_CE1_2013_04_25
+	#c_library <- mdot
+	#library (mdot); data (Minidot_02); indata <- Minidot_02; n_quality = 14; c_indata <- 'Minidot_02'
+	
+
+	#dirscr <- paste ( dirtop, '/DO/rovscript/', sep = '')
+	
+	#library(mdot)
+	library (parker)
+	data (parker)
+
+
+	library (plyr)
+	library (TTR)
+	library (zoo)
+
+	
+	do.call ( library, list (c_library))
+	
+	DataSets <- parker::ListData (c_library)
+	rownumber <- which (DataSets[,1] == c_dataset)
+	
+	#return (rownumber)
+	indata <- parker::LoadData (c_library, rownumber)
+
+	
+	if ( !is.null(indata$qualityFilter))
+		{
+		indata <- indata[indata$qualityFilter > n_quality,]
+		}
+
+	print ( str (indata))
+	print ( head (indata,2))
+	
+	#indata$DO_deficit_mv <- runMean(indata$DO_deficit, n = n_period, cumulative = FALSE, na.rm = TRUE)
+	indata$DO_deficit_mv <- runMean(indata$DO_deficit, n = n_period, cumulative = FALSE)
+	#plot(indata$DO_deficit_mv)
+
+	indata$DO_deficit_mv <- filter (indata$DO_deficit, rep(1/n_period, n_period), sides = 2)
+
+	lag_def <- with (indata, embed (DO_deficit_mv, 2))
+	indata$DO_deficit_diff <- c (NA, lag_def[,2] - lag_def[,1])
+	lag_def <- with (indata, embed (DO_deficit_diff, 2))
+	indata$DO_deficit_diff_diff <- c (NA, lag_def[,2] - lag_def[,1])
+	#plot(indata$DO_deficit_mv)
+
+
+	outdata <-  ddply (indata[c ( 'DO_deficit_mv', 'date','date1')], .(date1), summarize, min.Deficit = min ( get('DO_deficit_mv'), na.rm = TRUE), where.min = which.min(get('DO_deficit_mv')))
+	
+	outdata1 <- merge (indata, outdata, by = 'date1')
+	outdata1 <- outdata1[c('date','date1','DO', 'Sunrise','Sunset','DO_deficit_mv', 'min.Deficit', 'where.min')]
+	outdata1$where.min2 <- with (outdata1, DO_deficit_mv == min.Deficit)
+	
+	outdata2 <- outdata1[outdata1$where.min2, ]
+	
+	
+	return(list('summary' = outdata2, 'detail' = outdata1))
+	}
+
+xsss <- MovingAverage ('Ebble_CE1_2014_08_21_md', 'mdot.data')
+names(xsss)
+xsss$summary
+plot(xsss$detail$DO_deficit_mv[3000:4000])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+MovingAverage01 <- function (c_dataset, c_library, c_name, n_quality = 2, n_period = 120)
+	{
+	#indata <- Ebble_CE1_2013_04_25
+	#c_library <- mdot
+	#library (mdot); data (Minidot_02); indata <- Minidot_02; n_quality = 14; c_indata <- 'Minidot_02'
+	
+
+	#dirscr <- paste ( dirtop, '/DO/rovscript/', sep = '')
+	
+	#library(mdot)
+	library (parker)
+	data (parker)
+
+
+	library (plyr)
+	library (TTR)
+	library (zoo)
+
+	
+	do.call ( library, list (c_library))
+	
+	DataSets <- parker::ListData (c_library)
+	rownumber <- which (DataSets[,1] == c_dataset)
+	
+	#return (rownumber)
+	indata <- parker::LoadData (c_library, rownumber)
+
+	
+	if ( !is.null(indata$qualityFilter))
+		{
+		indata <- indata[indata$qualityFilter > n_quality,]
+		}
+
+	print ( str (indata))
+	print ( head (indata,2))
+	
+	#indata$DO_deficit_mv <- runMean(indata$DO_deficit, n = n_period, cumulative = FALSE, na.rm = TRUE)
+	indata$DO_deficit_mv <- runMean(indata$DO_deficit, n = n_period, cumulative = FALSE)
+	#plot(indata$DO_deficit_mv)
+
+	indata$DO_deficit_mv <- filter (indata$DO_deficit, rep(1/n_period, n_period), sides = 2)
+
+	lag_def <- with (indata, embed (DO_deficit_mv, 2))
+	indata$DO_deficit_diff <- c (NA, lag_def[,2] - lag_def[,1])
+	lag_def <- with (indata, embed (DO_deficit_diff, 2))
+	indata$DO_deficit_diff_diff <- c (NA, lag_def[,2] - lag_def[,1])
+	#plot(indata$DO_deficit_mv)
+	return(indata)
+	}
+#LOOOK HERE
+#LOOOK HERE
+#LOOOK HERE
+#LOOOK HERE
+#LOOOK HERE
+#LOOOK HERE
+#LOOOK HERE
+#LOOOK HERE
+
+	outdata <-  ddply (indata[c ( 'DO_deficit_mv', 'date','date1')], .(date1), summarize, min.Deficit = min ( get('DO_deficit_mv'), na.rm = TRUE), where.min = which.min(get('DO_deficit_mv')))
+	
+	outdata1 <- merge (indata, outdata, by = 'date1')
+	outdata1 <- outdata1[c('date','date1','DO', 'Sunrise','Sunset','DO_deficit_mv', 'min.Deficit', 'where.min')]
+	outdata1$where.min2 <- with (outdata1, DO_deficit_mv == min.Deficit)
+	
+	outdata2 <- outdata1[outdata1$where.min2, ]
+	
+	
+	return(list('summary' = outdata2, 'detail' = outdata1))
+	}
+
+xsss <- MovingAverage ('Ebble_CE1_2014_08_21_md', 'mdot.data')
+names(xsss)
+xsss$summary
+
+out <- xsss$detail
+out1 <- out[out$date1 == as.Date('2014-09-07',),]
+plot(out1$date, out1$DO_deficit)
+plot(xsss$date, xsss$DO_deficit_diff)
+
+plot(xsss$date[1000:3000], xsss$DO_deficit[1000:3000])
+
+
+
+
+
+xss <- smooth.spline(xsss$date[1500:2000], xsss$DO_deficit[1500:2000])
+xss <- splinefun(xsss$date[1500:2000], xsss$DO_deficit[1500:2000])
+
+
+
+fit = nls( xsss$DO_deficit[1500:2000] ~ xsss$date[1500:2000])
+
+
+
+p1*cos(p2*xdata) + p2*sin(p1*xdata), start=list(p1=p1,p2=p2))
+
+
+
+predict (xss, xsss$date[1500:2000])
+predict(s02, xx), 
+
+,> 
+xsss$date[1000:3000], xsss$DO_deficit[1000:3000])
+x, y = NULL, w = NULL, df, spar = NULL, cv = FALSE,
+              all.knots = FALSE, nknots = .nknots.smspl,
+              keep.data = TRUE, df.offset = 0, penalty = 1,
+              control.spar = list(), tol = 1e-6 * IQR(x))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+MovingAverageLinear <- function (c_dataset, c_library, c_name, n_quality = 2, n_period = 30)
+	{
+	#indata <- Ebble_CE1_2013_04_25
+	#c_library <- mdot
+	#library (mdot); data (Minidot_02); indata <- Minidot_02; n_quality = 14; c_indata <- 'Minidot_02'
+	
+
+	#dirscr <- paste ( dirtop, '/DO/rovscript/', sep = '')
+	
+	#library(mdot)
+	library (parker)
+	data (parker)
+
+
+	library (plyr)
+	library (TTR)
+	library (zoo)
+
+	
+	do.call ( library, list (c_library))
+	
+	DataSets <- parker::ListData (c_library)
+	rownumber <- which (DataSets[,1] == c_dataset)
+	
+	#return (rownumber)
+	indata <- parker::LoadData (c_library, rownumber)
+
+	
+	if ( !is.null(indata$qualityFilter))
+		{
+		indata <- indata[indata$qualityFilter > n_quality,]
+		}
+
+	print ( str (indata))
+	print ( head (indata,2))
+	
+	#indata$DO_deficit_mv <- runMean(indata$DO_deficit, n = n_period, cumulative = FALSE, na.rm = TRUE)
+	indata$DO_deficit_mv <- runMean(indata$DO_deficit, n = n_period, cumulative = FALSE)
+	#plot(indata$DO_deficit_mv)
+
+	lag_def <- with (indata, embed (DO_deficit, 2))
+	indata$DO_deficit_diff <- c (NA, lag_def[,2] - lag_def[,1])
+	lag_def <- with (indata, embed (DO_deficit_diff, 2))
+	indata$DO_deficit_diff_diff <- c (NA, lag_def[,2] - lag_def[,1])
+	#plot(indata$DO_deficit_mv)
+	return(indata)
+}
+
+
+	outdata <-  ddply (indata[c ( 'DO_deficit_mv', 'date','date1')], .(date1), summarize, min.Deficit = min ( get('DO_deficit_mv'), na.rm = TRUE), where.min = which.min(get('DO_deficit_mv')))
+	
+	outdata1 <- merge (indata, outdata, by = 'date1')
+	outdata1 <- outdata1[c('date','date1','DO', 'Sunrise','Sunset','DO_deficit_mv', 'min.Deficit', 'where.min')]
+	outdata1$where.min2 <- with (outdata1, DO_deficit_mv == min.Deficit)
+	
+	outdata2 <- outdata1[outdata1$where.min2, ]
+	
+	
+	return(list('summary' = outdata2, 'detail' = outdata1))
+	}
+
+
+#xsss <- MovingAverageLinear ('Ebble_CE1_2014_08_21_md', 'mdot.data')
+names(xsss)
+xsss$summary
+
+plot(xsss$DO_deficit[1000:10000])
+plot(xsss$DO_deficit_diff[1000:10000])
+
+
+out <- xsss$detail
+out1 <- out[out$date1 == as.Date('2014-09-07',),]
+plot(out1$date, out1$DO_deficit)

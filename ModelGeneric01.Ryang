@@ -1,0 +1,148 @@
+
+ModelGeneric01 <- function()
+	{
+	#################################
+	#################################
+	#################################
+	#################################
+	#################################
+	#################################
+	#################################
+	#################################
+	#################################
+	#################################
+	#################################
+	#################################
+	#################################
+	#################################
+	#################################
+	#################################
+	#################################
+	#################################
+	#################################
+	########Simulations
+	########Simulations
+	########Simulations
+	########Simulations
+	########Simulations
+	########Simulations
+	########Simulations
+	########Simulations
+	########Simulations
+	########Simulations
+	########Simulations
+	########Simulations
+	########Simulations
+	########Simulations
+	########Simulations
+	########Simulations
+	########Simulations
+	########Simulations
+	########Simulations
+	########Simulations
+	########Simulations
+	########Simulations
+	########Simulations
+	########Simulations
+	########Simulations
+	#################################
+	#################################
+	#################################
+	#################################
+	#################################
+	#################################
+	#################################
+	#################################
+	#################################
+	#################################
+	#################################
+	#################################
+	#################################
+	#################################
+	#################################
+	#################################
+	#################################
+	#################################
+	#################################
+	#################################
+	#################################
+	#################################
+	#################################
+	#################################
+	#################################
+	#################################
+	
+
+	
+	
+		
+	
+	#################################
+	########Simulation night time
+	#library (mdot)
+	#check fit of ER and Ks
+	#check fit of ER and Ks
+	x1 <- MakeERKsTimeSeries (c_basedata, c_basedata_ER)
+	model_night01 <- ModelDONightTime(indata = x1, c_night = 'night0002')
+	model_night02 <- ModelDONightTime(indata = x1, c_night = 'night0003')
+	model_night02 <- ModelDONightTime01(indata = x1, c_night = 'night0003')
+	output_ModelNight <- rbind ( model_night01, model_night02 )
+	PlotModelOutputNightTime ( output_ModelNight )
+	#################################
+	
+	
+	
+
+
+
+
+
+
+
+
+	
+	
+	
+	#################################
+	########Simulation day time
+	########Simulation day time
+	########Simulation day time
+	########Simulation day time
+	########Simulation day time
+	########Simulation day time
+	#################################
+	#model entire timeseries
+	#library (mdot)
+	x1 <- MakeERKsTimeSeries (c_basedata, c_basedata_ER)
+	head (x1,3)
+	plot (x1$date,x1$DO)
+	do.call ( data, list (c_basedata_Pmax))
+	output_ModelDayNight <- ModelDODayNight (indata = x1, inPhot = get (c_basedata_Pmax))
+	output_ModelDayNight <- ModelDODayNight01 (indata = x1, inPhot = get (c_basedata_Pmax))
+	output_ModelDayNight$daynight <- x1$daynight
+	output_ModelDayNight$daynight1 <- x1$daynight1
+	
+	
+	data_sub <- output_ModelDayNight[x1$daynight1 != 'day0004',]
+	banana <- approxfun ( data_sub$date, data_sub$Cnow )
+	
+	data_sub <- output_ModelDayNight[x1$daynight1 != 'day0004',]
+	PlotModelOutputDay ( indata = data_sub )
+	
+	
+	Cnow_additional <- banana ( basedata$date[basedata$qualityFilter == 1] )
+	points ( basedata$date[basedata$qualityFilter == 1], Cnow_additional, col = 'grey65', pch = 2, cex = 0.4 )
+	
+	#################################
+
+	
+	
+	
+	
+	output_list <- try ( list ( output_ModelNight, output_ModelDayNight, compute_DOPhot ))
+	names (output_list) <- try ( c ( paste (c_basedata, '_ModelNight', sep = ''), paste (c_basedata, '_ModelDayNight', sep = ''), 'compute_DOPhot' ))
+	
+	try ( return ( output_list))
+	}
+
+#output_analysis <- AnalysisMaySem ()
